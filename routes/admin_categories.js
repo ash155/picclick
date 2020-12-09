@@ -1,12 +1,15 @@
 var express = require('express');
 var router = express.Router();
 var path = require('path');
+const { isatty } = require('tty');
+var auth =require('../config/auth');
+var isAdmin = auth.isAdmin;
 
 var Category = require('../models/category');
 
 router.use(express.static(__dirname + '/public'));
 
-router.get('/', function (req, res){
+router.get('/', isAdmin, function (req, res){
     Category.find(function(err, categories){
         if(err) return console.log(err);
         res.render('admin/categories',{
@@ -16,7 +19,7 @@ router.get('/', function (req, res){
 });
 
 
-router.get('/add-category',function(req, res){
+router.get('/add-category',isAdmin, function(req, res){
 
     var title = "";
 
@@ -74,7 +77,7 @@ router.post('/add-category', function (req, res) {
 });
 
 
-router.get('/edit-category/:id', function (req, res) {
+router.get('/edit-category/:id', isAdmin, function (req, res) {
 
     Category.findById(req.params.id, function (err, category) {
         if (err)
@@ -143,7 +146,7 @@ router.post('/edit-category/:id', function (req, res) {
 
 });
 
-router.get('/delete-category/:id', function (req, res) {
+router.get('/delete-category/:id', isAdmin, function (req, res) {
 
     Category.findByIdAndRemove(req.params.id, function (err){
         if (err) return console.log(err);
